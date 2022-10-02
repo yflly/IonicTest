@@ -1,0 +1,46 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      <ng-container *ngIf="user$ | async as user; else loading">
+        Hello {{ user.username }}
+      </ng-container>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <span class="header_list">
+    <ion-text *ngIf="(breakpointMatch$ | async) === false" class="header_list-content my-todos">Mes todos</ion-text>
+
+    <span class="header_list-content" [ngStyle]="{'min-width': (breakpointMatch$ | async) === false ? '30%' : '100%'}">
+      <span class="flex-container" >
+        <ion-searchbar placeholder="Rechercher..."></ion-searchbar>
+        <ion-button class="add-todo" (click)="addTodo()">Nouveau</ion-button>
+      </span>
+    </span>
+  </span>
+
+  <ng-container *ngIf="list$ | async as list; else loading">
+    <ion-list inset="true">
+      <ng-container *ngFor="let todo of list">
+        <ion-item>
+          <ion-checkbox color="primary" #checkbox [checked]="todo.done" slot="start" (ionChange)="toggleTodo(todo, checkbox.checked)"></ion-checkbox>
+          <ion-label><span [ngStyle]="{'text-decoration': todo.done === true ? 'line-through' : 'unset'}">{{ todo.label }}</span></ion-label>
+          <ion-button class="delete-todo" slot="end" (click)="delete(todo)">
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ng-container>  
+    </ion-list>
+  </ng-container>
+  
+  
+</ion-content>
+
+<ng-template #loading>
+  loading ...
+</ng-template>
